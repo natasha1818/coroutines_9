@@ -3,7 +3,6 @@ package dto
 data class Post(
     val id: Long,
     val authorId: Long,
-    val author: Author,
     val content: String,
     val published: Long,
     val likedByMe: Boolean,

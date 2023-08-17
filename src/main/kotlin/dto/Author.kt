@@ -6,7 +6,9 @@ data class Author(
     val avatar: String,
 )
 
-data class PostWithAuthor <T>(
-    val t: T ,
-    val author:Author
+data class CommentWithAuthor (
+    val idAuthor: Long,
+    val comment: Comment,
+    val author:Author,
+    val authorAvatar:String,
 )

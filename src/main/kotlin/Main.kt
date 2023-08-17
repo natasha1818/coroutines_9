@@ -29,10 +29,15 @@ fun main() {
                     .map {post ->
                         async {
                             PostWithComments(post, getAuthor(client, post.authorId),getComments(client, post.id)
-                                .map{comment->
-                                    getAuthor(client,comment.authorId)
-                                }
-                                                       )
+                                .map { commentWithAuthor ->
+                                      async {
+                                        val author = getAuthor(client,  commentWithAuthor.idAuthor)
+                                        commentWithAuthor.copy(author = author, authorAvatar = author.avatar)
+
+                                    }
+                                }.awaitAll()
+
+                            )
                         }
                     }.awaitAll()
                 println(posts)
@@ -84,5 +89,5 @@ suspend fun getPosts(client: OkHttpClient): List<Post> =
 suspend fun getAuthor(client:OkHttpClient, id: Long): Author =
     makeRequest("$BASE_URL/api/slow/authors/$id", client, object : TypeToken<Author>() {})
 
-suspend fun getComments(client: OkHttpClient, id: Long): List<Comment> =
-    makeRequest("$BASE_URL/api/slow/posts/$id/comments", client, object : TypeToken<List<Comment>>() {})
+suspend fun getComments(client: OkHttpClient, id: Long): List<CommentWithAuthor> =
+    makeRequest("$BASE_URL/api/slow/posts/$id/comments", client, object : TypeToken<List<CommentWithAuthor>>() {})
